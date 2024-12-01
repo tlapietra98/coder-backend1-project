@@ -15,8 +15,7 @@ class ProductManager{
             const fileParse = JSON.parse(file);
 
             this.products = fileParse || [];
-            console.log(this.products);
-            
+
         } catch (error) {
             console.log(error);
         }
@@ -55,6 +54,22 @@ class ProductManager{
         }
     }
 
+    async getProductById(id){
+        
+        try {
+            await this.getProducts();
+
+            const product = this.products.find((prod) => prod.id === id);
+            if (!product) throw new Error(`No se encuentra el producto con el id ${id}`);
+            console.log(product);
+
+        } catch (error) {
+            console.log(error);
+        }
+        
+        
+    }
+
 }
 
 const products = new ProductManager();
@@ -76,3 +91,5 @@ const products = new ProductManager();
 //     code: "ABC124",
 //     stock: 10,
 // });
+
+products.getProductById(4);
