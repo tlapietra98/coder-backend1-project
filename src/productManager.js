@@ -1,5 +1,4 @@
 import fs from "fs";
-import { v4 as uuid } from "uuid";
 
 class ProductManager{
 
@@ -16,7 +15,8 @@ class ProductManager{
             const fileParse = JSON.parse(file);
 
             this.products = fileParse || [];
-
+            console.log(this.products);
+            
         } catch (error) {
             console.log(error);
         }
@@ -59,11 +59,20 @@ class ProductManager{
 
 const products = new ProductManager();
 
-products.addProduct({
-    title: "Producto 1",
-    description: "Descripción del producto 1",
-    price: 100,
-    thumbnail: "",
-    code: "ABC123",
-    stock: 10,
-});
+// products.addProduct({
+//     title: "Producto 1",
+//     description: "Descripción del producto 1",
+//     price: 100,
+//     thumbnail: "",
+//     code: "ABC123",
+//     stock: 10,
+// });
+
+// products.addProduct({
+//     title: "Producto 2",
+//     description: "Descripción del producto 2",
+//     price: 100,
+//     thumbnail: "",
+//     code: "ABC124",
+//     stock: 10,
+// });
