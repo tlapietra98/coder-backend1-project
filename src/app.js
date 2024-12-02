@@ -6,21 +6,21 @@ const PORT = 8080
 // Inicializamos express y la variable app contendrá todas la funcionalidades de express
 const app = express();
 
-// Configurar un endpoint, es el punto de entreda en el que el cliente va a solicitar una info
-// Método GET, es el método que usa el cliente para solicitar información al servidor
+// Middleware, para que se interprete la info que llega al servidor
+app.use(express.json());
+app.use(express.urlencoded({extended: true}));
 
-// Apertura de un "Endpoint", en el cual el cliente va a realizar una petición http, en este caso una petición get
+
 app.get("/", (req,res) => {
-    // Resopndemos al cliente
-    res.send("Mi primer servidor con Express");
+    res.status(200).send("Mi primer servidor con Express");
 })
 
 app.get("/saludo", (req,res) => {
-    res.send("Hola, te estoy saludando!!!");
+    res.status(200).send("Hola, te estoy saludando!!!");
 })
 
 app.get("/bienvenida", (req,res) => {
-    res.send(`<h1 style="color:blue;">¡Bienvenido a mi primer servidor express!</h1>`);
+    res.status(200).send(`<h1 style="color:blue;">¡Bienvenido a mi primer servidor express!</h1>`);
 })
 
 app.get("/usuario", (req,res) => {
@@ -30,7 +30,7 @@ app.get("/usuario", (req,res) => {
         edad: 44,
         correo: "jp@gmail.com",
     }
-    res.send(usuario);
+    res.status(200).send(usuario);
 })
 
 // req.params
@@ -38,14 +38,14 @@ app.get("/usuario", (req,res) => {
 app.get("/parametros/:dato", (req,res)=>{
     const parametro = req.params.dato;
 
-    res.send(`El dato ingresado por el cliente es: ${parametro}`);
+    res.status(200).send(`El dato ingresado por el cliente es: ${parametro}`);
 })
 
 app.get("/parametros/:nombre/:apellido", (req,res)=>{
     const nombre = req.params.nombre;
     const apellido = req.params.apellido;
 
-    res.send(`El nombre completo es ${nombre} ${apellido}`);
+    res.status(200).send(`El nombre completo es ${nombre} ${apellido}`);
 })
 
 const usuarios = [
@@ -61,7 +61,7 @@ app.get("/usuarios/:id", (req,res)=>{
     const user = usuarios.find((usuario) => usuario.id === Number(id));
     if(!user) return res.send(`No se encuentra el usuario con el id ${id}`);
 
-    res.send(user);
+    res.status(200).send(user);
 });
 
 // req.query
@@ -71,7 +71,7 @@ app.get("/queries", (req,res) => {
     if(!nombre || !apellido) return res.send("Debe ingresar un nombre y apellido por query!");
 
 
-    res.send(`El nombre ingresado es ${nombre} ${apellido}`);
+    res.status(200).send(`El nombre ingresado es ${nombre} ${apellido}`);
 })
 
 const usuarios2 = [
@@ -92,9 +92,66 @@ app.get("/usuarios2", (req,res) => {
 
     const users = usuarios2.filter(usuario => usuario.genero === query);
 
-    res.send(users);
+    res.status(200).send(users);
 })
 
+
+let users = [];
+
+app.get("/user", (req,res)=>{
+    res.status(200).send(users);
+})
+
+app.get("/user/:id", (req,res) => {
+    const { id } = req.params;
+    const user = users.find((user) => user.id === Number(id));
+    if(!user) return res.status(404).send("User not found!");
+
+    res.status(200).send(user);
+})
+
+app.post("/user", (req, res) => {
+
+    const user = req.body;
+
+    const newUser = {
+        id: users.length + 1,
+        ...user,
+    }
+    users.push(newUser);
+    res.status(201).send(users);
+
+})
+
+
+app.put("/user/:id", (req, res)=>{
+
+    const { id } = req.params;
+    const data = req.body;
+
+    const index = users.findIndex(user => user.id === Number(id));
+    if(index === -1) return res.status(404).send("User not found!");
+
+    users[index] = {
+        ...users[index],
+        ...data,
+    };
+
+    res.status(200).send(users[index]);
+
+})
+
+
+app.delete("/user/:id", (req, res) => {
+    const { id } = req.params;
+
+    const user = users.find((user) => user.id === Number(id));
+    if(!user) return res.status(404).send("User not found!");
+
+    users = users.filter((user) => user.id !== Number(id));
+
+    res.status(200).send("User deleted!!");
+});
 
 
 app.listen(PORT, () => {
