@@ -1,15 +1,104 @@
-//import express from "express";
+import express from "express";
 //import productRoutes from "./router/products.routes";
-import http from "http"
+
+const PORT = 8080
+
+// Inicializamos express y la variable app contendrá todas la funcionalidades de express
+const app = express();
+
+// Configurar un endpoint, es el punto de entreda en el que el cliente va a solicitar una info
+// Método GET, es el método que usa el cliente para solicitar información al servidor
+
+// Apertura de un "Endpoint", en el cual el cliente va a realizar una petición http, en este caso una petición get
+app.get("/", (req,res) => {
+    // Resopndemos al cliente
+    res.send("Mi primer servidor con Express");
+})
+
+app.get("/saludo", (req,res) => {
+    res.send("Hola, te estoy saludando!!!");
+})
+
+app.get("/bienvenida", (req,res) => {
+    res.send(`<h1 style="color:blue;">¡Bienvenido a mi primer servidor express!</h1>`);
+})
+
+app.get("/usuario", (req,res) => {
+    const usuario={
+        nombre: "Juan",
+        apellido: "Perez",
+        edad: 44,
+        correo: "jp@gmail.com",
+    }
+    res.send(usuario);
+})
+
+// req.params
+
+app.get("/parametros/:dato", (req,res)=>{
+    const parametro = req.params.dato;
+
+    res.send(`El dato ingresado por el cliente es: ${parametro}`);
+})
+
+app.get("/parametros/:nombre/:apellido", (req,res)=>{
+    const nombre = req.params.nombre;
+    const apellido = req.params.apellido;
+
+    res.send(`El nombre completo es ${nombre} ${apellido}`);
+})
+
+const usuarios = [
+    {id: 1, nombre: "Miguel", apellido: "Castro", edad: 54},
+    {id: 2, nombre: "Juan", apellido: "Perez", edad: 33},
+    {id: 3, nombre: "Pepe", apellido: "Sapo", edad: 21},
+];
 
 
-const server = http.createServer( (request, response) => {
+app.get("/usuarios/:id", (req,res)=>{
+    const { id } = req.params;
 
-    response.end("Hola desde mi servidor Backend!!!");
+    const user = usuarios.find((usuario) => usuario.id === Number(id));
+    if(!user) return res.send(`No se encuentra el usuario con el id ${id}`);
 
+    res.send(user);
 });
 
-server.listen(8080, () => {
-    console.log("Servidor escuchando en el puerto 8080!")
+// req.query
+
+app.get("/queries", (req,res) => {
+    const { nombre, apellido } = req.query;
+    if(!nombre || !apellido) return res.send("Debe ingresar un nombre y apellido por query!");
+
+
+    res.send(`El nombre ingresado es ${nombre} ${apellido}`);
+})
+
+const usuarios2 = [
+    {id: 1, nombre: "Miguel", apellido: "Castro", edad: 54, genero: "M"},
+    {id: 2, nombre: "Juan", apellido: "Perez", edad: 33, genero: "M"},
+    {id: 3, nombre: "Pepe", apellido: "Sapo", edad: 21, genero: "M"},
+    {id: 4, nombre: "Maria", apellido: "Diaz", edad: 26, genero: "F"},
+    {id: 5, nombre: "Emilia", apellido: "Gomez", edad: 36, genero: "F"},
+    {id: 6, nombre: "Julia", apellido: "Lopez", edad: 44, genero: "F"},
+];
+
+app.get("/usuarios2", (req,res) => {
+    
+    const { genero } = req.query;
+    const query = genero.toLocaleUpperCase();
+
+    if(!genero || ( query !== "M" && query !== "F" )) return res.send(usuarios2);
+
+    const users = usuarios2.filter(usuario => usuario.genero === query);
+
+    res.send(users);
+})
+
+
+
+app.listen(PORT, () => {
+    console.log(`Servidor escuchando en el puerto ${PORT}!!`);
 });
+
 
