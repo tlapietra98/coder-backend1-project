@@ -52,7 +52,7 @@ export class CartManager{
             
         const cart = await this.getCartById(cid);
 
-        const product = cart.products.find((product) => product.id === pid);
+        const product = cart.products.find((cartItem) => cartItem.product === pid);
 
         if (!product) {
           // If product doesn't exist in cart, add it
