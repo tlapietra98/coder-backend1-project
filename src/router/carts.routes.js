@@ -8,6 +8,19 @@ const productManager = new ProductManager();
 const cartManager = new CartManager();
 
 
+
+// Get all carts
+router.get("/", async (req, res) => {
+    
+    try {
+        const carts = await cartManager.getCarts();
+        res.status(200).send(carts);
+    } catch (error) {
+        console.log(error);
+        res.status(404).send(error.message);
+    }
+})
+
 // Get a cart by ID
 router.get("/:cid", async (req, res) => {
     
