@@ -1,4 +1,18 @@
-<h1>Hello, welcome {{name}}!</h1>
+<h1>Hello! Welcome {{name}} to our products page!</h1>
+
+<form id="form">
+    <label for="">Title</label>
+    <input type="text" name="title"/>
+    <label for="">Price</label>
+    <input type="number" name="price"/>
+    <label for="">Stock</label>
+    <input type="number" name="stock"/>
+    <button type="submit">Send</button>
+</form>
+
+<div id="productsList">
+    
+</div>
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="/js/index.js"></script>

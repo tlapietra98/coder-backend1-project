@@ -66,22 +66,23 @@ const httpServer = app.listen(PORT, () => {
 
 // Socket config
 const io = new Server(httpServer);
+
+let products = [];
+
 io.on("connection", (socket) => {
     console.log(`A new client (id: ${socket.id}) has connected.`);
 
-    // Receive an event
-    socket.on("message", (data) => {
-        console.log(data);
-    })
+    socket.on("product", (data) => {
+        products.push(data);
 
-    // Message for an individual socket, only an individual client receives it
-    socket.emit("individual-socket", "This message is for an individual socket.");
+        // Send updated products info to all clients
+        io.emit("products", products);
 
-    // Message for all sockets except the current one
-    socket.broadcast.emit("exclusionary-socket", "This message is for all sockets except the current one.");
+        // Update stock
+        socket.on("changeStock", (data) => {
+            products = data;
+            io.emit("products", products);
+        })
+    });
 
-    // Message for all sockets
-    io.emit("all-sockets", "This message is for all sockets.");
-
-
-})
+});
