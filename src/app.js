@@ -67,5 +67,21 @@ const httpServer = app.listen(PORT, () => {
 // Socket config
 const io = new Server(httpServer);
 io.on("connection", (socket) => {
-    console.log("A new client has connected.");
+    console.log(`A new client (id: ${socket.id}) has connected.`);
+
+    // Receive an event
+    socket.on("message", (data) => {
+        console.log(data);
+    })
+
+    // Message for an individual socket, only an individual client receives it
+    socket.emit("individual-socket", "This message is for an individual socket.");
+
+    // Message for all sockets except the current one
+    socket.broadcast.emit("exclusionary-socket", "This message is for all sockets except the current one.");
+
+    // Message for all sockets
+    io.emit("all-sockets", "This message is for all sockets.");
+
+
 })
