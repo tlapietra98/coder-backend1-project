@@ -50,6 +50,16 @@ socket.on("messageLogs", (data) => {
 });
 
 
+// Socket - New user notification
+socket.on("newUser", (data) => {
+    Swal.fire({
+        text: `${data} has connected.`,
+        toast: true,
+        position: "top-right",
+        timer: 2000
+    });
+});
+
 
 from.onsubmit = (e) => {
     e.preventDefault();

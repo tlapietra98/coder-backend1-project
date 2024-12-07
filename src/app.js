@@ -88,7 +88,7 @@ io.on("connection", (socket) => {
     });
 
     socket.on("newUser", (data) => {
-        console.log(data);
+        socket.broadcast.emit("newUser", data);
     });
 
     socket.on("message", (data) => {
