@@ -69,6 +69,8 @@ const io = new Server(httpServer);
 
 let products = [];
 
+let messages = [];
+
 io.on("connection", (socket) => {
     console.log(`A new client (id: ${socket.id}) has connected.`);
 
@@ -82,7 +84,16 @@ io.on("connection", (socket) => {
         socket.on("changeStock", (data) => {
             products = data;
             io.emit("products", products);
-        })
+        });
+    });
+
+    socket.on("newUser", (data) => {
+        console.log(data);
+    });
+
+    socket.on("message", (data) => {
+        messages.push(data);
+        io.emit("messageLogs", messages);
     });
 
 });
