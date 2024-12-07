@@ -1,1 +1,8 @@
-[{"id":"b6fdc2d6-8fca-4844-b4ef-bc397629d57a","products":[{"product":"0597a209-d662-4217-b2ac-6034b02da1be","quantity":2}]}]
+[
+  {
+    "id": "b6fdc2d6-8fca-4844-b4ef-bc397629d57a",
+    "products": [
+      { "product": "0597a209-d662-4217-b2ac-6034b02da1be", "quantity": 2 }
+    ]
+  }
+]

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { ProductManager } from "../productManager.js";
+import { ProductManager } from "../managers/productManager.js";
 
 const router = Router();
 const productManager = new ProductManager();
@@ -41,7 +41,7 @@ router.post("/", async (req, res) => {
         res.status(201).send(product);
     } catch (error) {
         console.log(error);
-        res.status(404).send(error.message);
+        res.status(400).send(error.message);
     }
 });
 
