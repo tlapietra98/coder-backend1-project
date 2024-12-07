@@ -52,11 +52,11 @@ export class CartManager{
             
         const cart = await this.getCartById(cid);
 
-        const product = cart.products.find((cartItem) => cartItem.product === pid);
+        const product = cart.products.find((product) => product.id === pid);
 
         if (!product) {
           // If product doesn't exist in cart, add it
-          cart.products.push({ product: pid, quantity: 1 });
+          cart.products.push({ id: pid, quantity: 1 });
         } else {
           // If product does exist in cart, increase quantity by 1
           product.quantity++;
