@@ -1,7 +1,7 @@
-import mongoose, { mongo } from "mongoose";
+import mongoose from "mongoose";
 
 // Define the name of the collection
-const productCollection = "products";
+const productsCollection = "products";
 
 // Define the schema of the document
 const productSchema = new mongoose.Schema( {
@@ -15,9 +15,12 @@ const productSchema = new mongoose.Schema( {
         unique: true
     },
     stock: Number,
-    status: Boolean,
+    status: {
+        type: Boolean,
+        default: true
+    },
 } );
 
 
 // Export the model for use in our routes
-export const productModel = mongoose.model(productCollection, productSchema);
+export const productModel = mongoose.model(productsCollection, productSchema);
