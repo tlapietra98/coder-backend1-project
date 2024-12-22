@@ -1,8 +1,47 @@
 import { Router } from "express";
 import { ProductManager } from "../managers/productManager.js";
+import { productModel } from "../models/products.model.js";
 
 const router = Router();
 const productManager = new ProductManager();
+
+
+
+// MONGO DB
+
+// Get products
+router.get("/mongodb", async (req, res) => {
+
+    try {
+        const products = await productModel.find();
+        res.status(200).send(products);
+    } catch (error) {
+        console.log(error);
+        res.status(404).send(error.message);
+    }
+});
+
+
+// Create/Post a product
+router.post("/mongodb", async (req, res) => {
+    
+    const body = req.body;
+
+    try {
+        const product = await productModel.create(body);
+
+        res.status(201).send(product);
+
+    } catch (error) {
+        console.log(error);
+        res.status(400).send(error.message);
+    }
+});
+
+
+// ----------
+
+
 
 // Get products
 router.get("/", async (req, res) => {

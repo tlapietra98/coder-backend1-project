@@ -29,7 +29,7 @@ export class ChatManager {
 
     this.messages.push(newMessage);
 
-    await fs.promises.writeFile(this.path, JSON.stringify(this.messages));
+    await fs.promises.writeFile(this.path, JSON.stringify(this.messages, null, 2));
 
     return newMessage;
   }

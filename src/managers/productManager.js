@@ -62,7 +62,7 @@ export class ProductManager {
 
     this.products.push(newProduct);
 
-    await fs.promises.writeFile(this.path, JSON.stringify(this.products));
+    await fs.promises.writeFile(this.path, JSON.stringify(this.products, null, 2));
 
     return newProduct;
   }
@@ -78,7 +78,7 @@ export class ProductManager {
       ...data,
     };
 
-    await fs.promises.writeFile(this.path, JSON.stringify(this.products));
+    await fs.promises.writeFile(this.path, JSON.stringify(this.products, null, 2));
 
     return this.products[index];
   }
@@ -89,7 +89,7 @@ export class ProductManager {
 
     this.products = this.products.filter((products) => products.id !== id);
 
-    await fs.promises.writeFile(this.path, JSON.stringify(this.products));
+    await fs.promises.writeFile(this.path, JSON.stringify(this.products, null, 2));
 
     return `Product with ID ${id} has been deleted.`;
   }
