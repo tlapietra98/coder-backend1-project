@@ -1,8 +1,8 @@
 import { Router } from "express";
 //import { ProductManager } from "../managers/productManager.js";
 //import { CartManager } from "../managers/cartManager.js";
-import { cartModel } from "../models/cart.model.js";
-import { productModel } from "../models/product.model.js";
+import { cartModel } from "../dao/models/cart.model.js";
+import { productModel } from "../dao/models/product.model.js";
 
 
 const router = Router();
@@ -31,7 +31,10 @@ router.get("/:cid", async (req, res) => {
 
     try {
         const cart = await cartModel.findById(cid);
+        //const cart = await cartModel.find({_id: cid}); // I want to use the pre populate
         if(!cart) return res.json({status: "error", message: `Cart with ID ${cid} not found!`})
+        console.log("Found requested cart with ID:" + cart._id);
+
 
         res.json({status: "ok", payload: cart});
     } catch (error) {
@@ -43,8 +46,31 @@ router.get("/:cid", async (req, res) => {
 
 // Create a cart
 router.post("/", async (req, res) => {
+    
+    const body = req.body;
+    
+    try {
+        const cart = await cartModel.create(body);
+        res.json({status: "ok", payload: cart});
+    } catch (error) {
+        console.log(error);
+        res.status(404).send(error.message);
+    }
+})
+
+
+// Create a cart with a product
+router.post("/product/:pid", async (req, res) => {
     try {
         const cart = await cartModel.create({});
+
+        const findProduct = await productModel.findById(pid);
+        if(!findProduct) return res.json({status: "error", message: `Product with ID ${pid} not found!`})
+
+        cart.products.push({prodID: pid, quantity: 1})
+
+        cart = await cartModel.findByIdAndUpdate(cart._id, { products: cart.products }, {new: true});
+
         res.json({status: "ok", payload: cart});
     } catch (error) {
         console.log(error);
@@ -59,22 +85,26 @@ router.post("/:cid/product/:pid", async (req, res) => {
     const { cid, pid } = req.params;
 
     try {
-        const findProduct = await productModel.findById(pid);
-        if(!findProduct) return res.json({status: "error", message: `Product with ID ${pid} not found!`})
+        const product = await productModel.findById(pid);
+        if(!product) return res.json({status: "error", message: `Product with ID ${pid} not found!`})
+        console.log("Found requested product with ID:" + product._id);
 
-        const findCart = await cartModel.findById(cid);
-        if(!findCart) return res.json({status: "error", message: `Cart with ID ${cid} not found!`})
+        let cart = await cartModel.findById(cid);
+        //let cart = await cartModel.find({_id: cid});
+        if(!cart) return res.json({status: "error", message: `Cart with ID ${cid} not found!`})
+        console.log("Found requested cart with ID:" + cart._id);
 
-        const cartProduct = findCart.products.find((product) => product.prodID === pid)
+        const cartProduct = cart.products.find((p) => p.prodID === pid)
+
         if (!cartProduct) {
             // If the product doesn't exist in the cart, add it
-            findCart.products.push({prodID: pid, quantity: 1});
+            cart.products.push({prodID: pid, quantity: 1});
         } else {
             // If the product exists in the cart, we increase its quantity by 1
             cartProduct.quantity++;
         }
 
-        const cart = await cartModel.findByIdAndUpdate(cid, { products: findCart.products }, {new: true});
+        cart = await cartModel.findByIdAndUpdate(cid, { products: cart.products }, {new: true});
         
         res.json({status: "ok", payload: cart});
     } catch (error) {

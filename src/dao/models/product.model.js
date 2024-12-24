@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import mongoosePaginate from "mongoose-paginate-v2";
 
 // Define the name of the collection
 const productsCollection = "products";
@@ -12,6 +13,7 @@ const productSchema = new mongoose.Schema( {
     thumbnail: String,
     code: {
         type: String,
+        index: true,
         unique: true
     },
     stock: Number,
@@ -21,6 +23,8 @@ const productSchema = new mongoose.Schema( {
     },
 } );
 
+// Plugin
+productSchema.plugin(mongoosePaginate);
 
 // Export the model for use in our routes
 export const productModel = mongoose.model(productsCollection, productSchema);

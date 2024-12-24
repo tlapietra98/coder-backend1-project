@@ -3,7 +3,7 @@ import handlebars from "express-handlebars";
 import { Server } from "socket.io";
 import productsRoutes from "./router/products.routes.js";
 import cartsRoutes from "./router/carts.routes.js";
-import { ChatManager } from "./managers/chatManager.js";
+import { ChatManager } from "./dao/managers/chatManager.js";
 import { connectMongoDB } from "./config/mongoDB.config.js";
 
 const PORT = 8080;

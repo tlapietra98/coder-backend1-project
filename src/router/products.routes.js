@@ -1,6 +1,7 @@
 import { Router } from "express";
 //import { ProductManager } from "../managers/productManager.js";
-import { productModel } from "../models/product.model.js";
+import { productModel } from "../dao/models/product.model.js";
+import { productDao } from "../dao/mongoDao/products.dao.js";
 
 const router = Router();
 //const productManager = new ProductManager();
@@ -8,8 +9,11 @@ const router = Router();
 // Get products
 router.get("/", async (req, res) => {
 
+    const {limit, page} = req.query;
+
     try {
-        const products = await productModel.find();
+        //const products = await productModel.find();
+        const products = await productDao.getAll({},{limit});
         res.json({status: "ok", payload: products});
     } catch (error) {
         console.log(error);
