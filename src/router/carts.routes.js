@@ -3,6 +3,8 @@ import { Router } from "express";
 //import { CartManager } from "../managers/cartManager.js";
 import { cartModel } from "../dao/models/cart.model.js";
 import { productModel } from "../dao/models/product.model.js";
+import { cartDao } from "../dao/mongoDao/carts.dao.js";
+import { productDao } from "../dao/mongoDao/products.dao.js";
 
 
 const router = Router();
@@ -59,42 +61,19 @@ router.post("/", async (req, res) => {
 })
 
 
-// Create a cart with a product
-router.post("/product/:pid", async (req, res) => {
-    try {
-        const cart = await cartModel.create({});
-
-        const findProduct = await productModel.findById(pid);
-        if(!findProduct) return res.json({status: "error", message: `Product with ID ${pid} not found!`})
-
-        cart.products.push({prodID: pid, quantity: 1})
-
-        cart = await cartModel.findByIdAndUpdate(cart._id, { products: cart.products }, {new: true});
-
-        res.json({status: "ok", payload: cart});
-    } catch (error) {
-        console.log(error);
-        res.status(404).send(error.message);
-    }
-})
-
-
 // Add product to cart
 router.post("/:cid/product/:pid", async (req, res) => {
 
     const { cid, pid } = req.params;
 
     try {
-        const product = await productModel.findById(pid);
+        const product = await productDao.getById(pid);
         if(!product) return res.json({status: "error", message: `Product with ID ${pid} not found!`})
-        console.log("Found requested product with ID:" + product._id);
 
-        let cart = await cartModel.findById(cid);
-        //let cart = await cartModel.find({_id: cid});
+        let cart = await cartDao.getById(cid);
         if(!cart) return res.json({status: "error", message: `Cart with ID ${cid} not found!`})
-        console.log("Found requested cart with ID:" + cart._id);
 
-        const cartProduct = cart.products.find((p) => p.prodID === pid)
+        const cartProduct = cart.products.find((p) => p.prodID === pid);
 
         if (!cartProduct) {
             // If the product doesn't exist in the cart, add it
@@ -107,6 +86,70 @@ router.post("/:cid/product/:pid", async (req, res) => {
         cart = await cartModel.findByIdAndUpdate(cid, { products: cart.products }, {new: true});
         
         res.json({status: "ok", payload: cart});
+    } catch (error) {
+        console.log(error);
+        res.status(404).send(error.message);
+    }
+});
+
+
+// Update product quantity
+router.put("/:cid/product/:pid", async (req, res) => {
+
+    const { cid, pid } = req.params;
+    const { quantity } = req.body;
+
+    try {
+        const product = await productDao.getById(pid);
+        if(!product) return res.json({status: "error", message: `Product with ID ${pid} not found!`})
+
+        let cart = await cartDao.getById(cid);
+        if(!cart) return res.json({status: "error", message: `Cart with ID ${cid} not found!`})
+
+        const updatedCart = await cartDao.updateProduct(cid, pid, quantity);
+
+        res.json({status: "ok", payload: updatedCart});
+    } catch (error) {
+        console.log(error);
+        res.status(404).send(error.message);
+    }
+});
+
+
+// Delete a cart by ID
+router.delete("/:cid", async (req, res) => {
+    
+    const { cid } = req.params;
+
+    try {
+        let cart = await cartDao.getById(cid);
+        if(!cart) return res.json({status: "error", message: `Cart with ID ${cid} not found!`})
+
+        cart = await cartDao.delete(cid);
+
+        res.json({status: "ok", message: `Cart with ID ${cid} deleted!`});
+    } catch (error) {
+        console.log(error);
+        res.status(404).send(error.message);
+    }
+})
+
+
+// Delete product from cart
+router.delete("/:cid/product/:pid", async (req, res) => {
+
+    const { cid, pid } = req.params;
+
+    try {
+        const product = await productDao.getById(pid);
+        if(!product) return res.json({status: "error", message: `Product with ID ${pid} not found!`})
+
+        let cart = await cartDao.getById(cid);
+        if(!cart) return res.json({status: "error", message: `Cart with ID ${cid} not found!`})
+
+        const updatedCart = await cartDao.deleteProduct(cid, pid);
+        
+        res.json({status: "ok", payload: updatedCart});
     } catch (error) {
         console.log(error);
         res.status(404).send(error.message);
