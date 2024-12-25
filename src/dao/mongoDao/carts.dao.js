@@ -29,6 +29,11 @@ class CartDao{
         return await cartModel.findByIdAndUpdate(cid, { products: productFilter }, {new: true});
     }
 
+    async deleteAllProducts(cid){
+
+        return await cartModel.findByIdAndUpdate(cid, { products: [] }, { new: true });
+    }
+
     async updateProduct(cid, pid, quantity){
         const cart = await cartModel.findById(cid);
         const product = cart.products.find(p => p.prodID === pid)

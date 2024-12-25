@@ -35,8 +35,6 @@ router.get("/:cid", async (req, res) => {
         const cart = await cartModel.findById(cid);
         //const cart = await cartModel.find({_id: cid}); // I want to use the pre populate
         if(!cart) return res.json({status: "error", message: `Cart with ID ${cid} not found!`})
-        console.log("Found requested cart with ID:" + cart._id);
-
 
         res.json({status: "ok", payload: cart});
     } catch (error) {
@@ -122,12 +120,13 @@ router.delete("/:cid", async (req, res) => {
     const { cid } = req.params;
 
     try {
-        let cart = await cartDao.getById(cid);
+        const cart = await cartDao.getById(cid);
         if(!cart) return res.json({status: "error", message: `Cart with ID ${cid} not found!`})
 
-        cart = await cartDao.delete(cid);
+        //cart = await cartDao.delete(cid); // este es el metodo incorrecto segun la consigna
+        const updatedCart = await cartDao.deleteAllProducts(cid);
 
-        res.json({status: "ok", message: `Cart with ID ${cid} deleted!`});
+        res.json({status: "ok", payload: updatedCart});
     } catch (error) {
         console.log(error);
         res.status(404).send(error.message);
